@@ -37,4 +37,13 @@
 
     <string name="editor_update_product_failed">Error with updating product</string>
 
+    <string name="editor_delete_product_successful">Product deleted</string>
+
+    <string name="editor_delete_product_failed">Error with deleting product</string>
+
+    <string name="delete_dialog_msg">Delete this product?</string>
+
+    <string name="delete">Delete</string>
+
+    <string name="cancel">Cancel</string>
 </resources>
