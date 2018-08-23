@@ -1,13 +1,139 @@
 package com.example.android.inventoryapp;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 public class EditorActivity extends AppCompatActivity {
+
+    private static final int EXISTING_PET_LOADER = 0;
+
+    private Uri mCurrentProductUri;
+
+    private EditText mNameEditText;
+
+    private EditText mPriceEditText;
+
+    private EditText mQuantityEditText;
+
+    private EditText mSupplierNameEditText;
+
+    private EditText mSupplierPhoneEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+
+        Intent intent = getIntent();
+        mCurrentProductUri = intent.getData();
+
+        mNameEditText = (EditText) findViewById(R.id.edit_product_name);
+        mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
+        mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
+        mSupplierPhoneEditText = (EditText) findViewById(R.id.edit_supplier_phone);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu options from the res/menu/menu_editor.xml file.
+        // This adds menu items to the app bar.
+        getMenuInflater().inflate(R.menu.menu_editor, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            // Respond to a click on the "Save" menu option
+            case R.id.action_save:
+                // Save pet to database
+                saveProduct();
+                // Exit activity
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void saveProduct() {
+        // Read from input fields
+        // Use trim to eliminate leading or trailing white space
+        String nameString = mNameEditText.getText().toString().trim();
+        String priceString = mPriceEditText.getText().toString().trim();
+        String quantityString = mQuantityEditText.getText().toString().trim();
+        String supplierNameString = mSupplierNameEditText.getText().toString().trim();
+        String supplierPhoneString = mSupplierPhoneEditText.getText().toString().trim();
+
+        // Check if this is supposed to be a new product
+        // and check if all the fields in the editor are blank
+        if (mCurrentProductUri == null &&
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierNameString) &&
+                TextUtils.isEmpty(supplierPhoneString)) {
+            // Since no fields were modified, we can return early without creating a new product.
+            // No need to create ContentValues and no need to do any ContentProvider operations.
+            return;
+        }
+
+        // Create a ContentValues object where column names are the keys,
+        // and pet attributes from the editor are the values.
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
+
+        float price = 0;
+        if(!TextUtils.isEmpty(priceString)) {
+            price = Float.parseFloat(priceString);
+        }
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
+
+        int quantity = 0;
+        if (!TextUtils.isEmpty(quantityString)) {
+            quantity = Integer.parseInt(quantityString);
+        }
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
+
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, supplierNameString);
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, supplierPhoneString);
+
+        // Determine if this is a new or existing product by checking if mCurrentProductUri is null or not
+        if (mCurrentProductUri == null) {
+            Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+
+            // Show a toast message depending on whether or not the insertion was successful
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, getString(R.string.editor_insert_product_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_insert_product_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
+
+            // Show a toast message depending on whether or not the update was successful.
+            if (rowsAffected == 0) {
+                // If no rows were affected, then there was an error with the update.
+                Toast.makeText(this, getString(R.string.editor_update_product_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the update was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_update_product_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

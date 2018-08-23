@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
@@ -91,10 +92,52 @@ public class InventoryProvider extends ContentProvider {
         return null;
     }
 
-    @Nullable
     @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
+    public Uri insert(Uri uri, ContentValues contentValues) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PRODUCTS:
+                return insertProduct(uri, contentValues);
+            default:
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
+        }
+    }
+
+    private Uri insertProduct(Uri uri, ContentValues values) {
+
+        // Check that the name is not null
+        String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
+        if (name == null) {
+            throw new IllegalArgumentException("Product requires a name");
+        }
+
+        Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_PRICE);
+        if (price != null && price < 0) {
+            throw new IllegalArgumentException("Product requires non negative price");
+        }
+
+        Integer quantity = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        if (quantity != null && quantity < 0) {
+            throw new IllegalArgumentException("Product requires non negative quantity");
+        }
+
+        // Get writeable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Insert the new product with the given values
+        long id = database.insert(ProductEntry.TABLE_NAME, null, values);
+
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+
+        // Notify all listeners that the data has changed for the pet content URI
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        // Once we know the ID of the new row in the table,
+        // return the new URI with the ID appended to the end of it
+        return ContentUris.withAppendedId(uri, id);
     }
 
     @Override
