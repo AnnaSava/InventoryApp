@@ -2,6 +2,7 @@ package com.example.android.inventoryapp;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,9 +14,14 @@ import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
-public class EditorActivity extends AppCompatActivity {
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 
-    private static final int EXISTING_PET_LOADER = 0;
+public class EditorActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int EXISTING_PRODUCT_LOADER = 0;
 
     private Uri mCurrentProductUri;
 
@@ -36,6 +42,15 @@ public class EditorActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
+
+        if (mCurrentProductUri == null) {
+
+            setTitle(getString(R.string.editor_activity_title_new_product));
+        } else {
+            setTitle(getString(R.string.editor_activity_title_edit_product));
+
+            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+        }
 
         mNameEditText = (EditText) findViewById(R.id.edit_product_name);
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
@@ -58,7 +73,7 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
+                // Save product to database
                 saveProduct();
                 // Exit activity
                 finish();
@@ -88,7 +103,7 @@ public class EditorActivity extends AppCompatActivity {
         }
 
         // Create a ContentValues object where column names are the keys,
-        // and pet attributes from the editor are the values.
+        // and product attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
 
@@ -135,5 +150,67 @@ public class EditorActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String[] projection = {
+                ProductEntry._ID,
+                ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductEntry.COLUMN_PRODUCT_PRICE,
+                ProductEntry.COLUMN_PRODUCT_QUANTITY,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE};
+
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(this,   // Parent activity context
+                mCurrentProductUri,         // Query the content URI for the current product
+                projection,             // Columns to include in the resulting Cursor
+                null,                   // No selection clause
+                null,                   // No selection arguments
+                null);                  // Default sort order
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Bail early if the cursor is null or there is less than 1 row in the cursor
+        if (cursor == null || cursor.getCount() < 1) {
+            return;
+        }
+
+        // Proceed with moving to the first row of the cursor and reading data from it
+        // (This should be the only row in the cursor)
+        if (cursor.moveToFirst()) {
+            // Find the columns of product attributes that we're interested in
+            int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
+            int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
+            int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            int supplierNameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME);
+            int supplierPhoneColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE);
+
+            // Extract out the value from the Cursor for the given column index
+            String name = cursor.getString(nameColumnIndex);
+            float price = cursor.getFloat(priceColumnIndex);
+            int quantity = cursor.getInt(quantityColumnIndex);
+            String supplierName = cursor.getString(supplierNameColumnIndex);
+            String supplierPhone = cursor.getString(supplierPhoneColumnIndex);
+
+            // Update the views on the screen with the values from the database
+            mNameEditText.setText(name);
+            mPriceEditText.setText(Float.toString(price));
+            mQuantityEditText.setText(Integer.toString(quantity));
+            mSupplierNameEditText.setText(supplierName);
+            mSupplierPhoneEditText.setText(supplierPhone);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // If the loader is invalidated, clear out all the data from the input fields.
+        mNameEditText.setText("");
+        mPriceEditText.setText("");
+        mQuantityEditText.setText("");
+        mSupplierNameEditText.setText("");
+        mSupplierPhoneEditText.setText("");
     }
 }

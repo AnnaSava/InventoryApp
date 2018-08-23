@@ -132,7 +132,7 @@ public class InventoryProvider extends ContentProvider {
             return null;
         }
 
-        // Notify all listeners that the data has changed for the pet content URI
+        // Notify all listeners that the data has changed for the product content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Once we know the ID of the new row in the table,
@@ -146,7 +146,61 @@ public class InventoryProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection,
+                      String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PRODUCTS:
+                return updateProduct(uri, contentValues, selection, selectionArgs);
+            case PRODUCT_ID:
+                selection = ProductEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return updateProduct(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
+    }
+
+    private int updateProduct(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        // If the {@link ProductEntry#COLUMN_PRODUCT_NAME} key is present,
+        // check that the name value is not null.
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME)) {
+            String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
+            if (name == null) {
+                throw new IllegalArgumentException("Product requires a name");
+            }
+        }
+
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
+            Float price = values.getAsFloat(ProductEntry.COLUMN_PRODUCT_PRICE);
+            if (price != null && price < 0) {
+                throw new IllegalArgumentException("Product requires non negative price");
+            }
+        }
+
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
+            Integer quantity = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            if (quantity != null && quantity < 0) {
+                throw new IllegalArgumentException("Product requires non negative quantity");
+            }
+        }
+
+        // If there are no values to update, then don't try to update the database
+        if (values.size() == 0) {
+            return 0;
+        }
+
+        // Otherwise, get writeable database to update the data
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        int rowsUpdated = database.update(ProductEntry.TABLE_NAME, values, selection, selectionArgs);
+        // If 1 or more rows were updated, then notify all listeners that the data at the
+        // given URI has changed
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        // Return the number of rows updated
+        return rowsUpdated;
     }
 }

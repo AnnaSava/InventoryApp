@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">InventoryApp</string>
 
+    <string name="editor_activity_title_new_product">Add a Product</string>
+
+    <string name="editor_activity_title_edit_product">Edit Product</string>
+
     <string name="category_overview">Overview</string>
 
     <string name="hint_product_name">Product name</string>
