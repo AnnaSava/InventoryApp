@@ -156,4 +156,10 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:text="@string/button_call_supplier" />
+
+    <Button
+        android:id="@+id/delete_product"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="@string/button_delete_product" />
 </LinearLayout>

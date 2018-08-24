@@ -54,4 +54,6 @@
     <string name="quantity_zero">Quantity cannot be decremented!</string>
 
     <string name="button_call_supplier">Call supplier</string>
+
+    <string name="button_delete_product">Delete product</string>
 </resources>
