@@ -1,12 +1,16 @@
 package com.example.android.inventoryapp;
 
+import android.Manifest;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +21,7 @@ import android.widget.Toast;
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
 public class DetailsActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>{
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
@@ -68,14 +72,27 @@ public class DetailsActivity extends AppCompatActivity
                 updateQuantity(-1, R.string.quantity_decremented);
             }
         });
+
+        Button callSupplierButton = (Button) findViewById(R.id.call_supplier);
+        // Set a click listener on that Button
+        callSupplierButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String supplierPhone = String.format("tel: %s", mSupplierPhoneTextView.getText().toString());
+
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(supplierPhone));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
-    private void updateQuantity(int value, int messageResId)
-    {
+    private void updateQuantity(int value, int messageResId) {
         int newQuantity = mQuantity + value;
 
-        if(newQuantity < 0)
-        {
+        if (newQuantity < 0) {
             Toast.makeText(getApplicationContext(), getString(R.string.quantity_zero), Toast.LENGTH_SHORT).show();
             return;
         }

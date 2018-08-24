@@ -150,4 +150,10 @@
                 style="@style/EditorFieldStyle" />
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/call_supplier"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="@string/button_call_supplier" />
 </LinearLayout>

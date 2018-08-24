@@ -52,4 +52,6 @@
     <string name="quantity_decremented">Quantity decremented</string>
 
     <string name="quantity_zero">Quantity cannot be decremented!</string>
+
+    <string name="button_call_supplier">Call supplier</string>
 </resources>
