@@ -56,4 +56,6 @@
     <string name="button_call_supplier">Call supplier</string>
 
     <string name="button_delete_product">Delete product</string>
+
+    <string name="button_sale">Sale</string>
 </resources>
