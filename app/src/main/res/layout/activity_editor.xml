@@ -89,7 +89,7 @@
             android:layout_weight="2"
             android:paddingLeft="4dp">
 
-            <!-- Weight field -->
+            <!-- Quantity field -->
             <EditText
                 android:id="@+id/edit_product_quantity"
                 style="@style/EditorFieldStyle"

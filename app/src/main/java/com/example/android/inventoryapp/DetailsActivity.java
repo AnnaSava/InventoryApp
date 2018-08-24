@@ -1,6 +1,7 @@
 package com.example.android.inventoryapp;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -8,7 +9,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
 
@@ -29,6 +33,8 @@ public class DetailsActivity extends AppCompatActivity
 
     private TextView mSupplierPhoneTextView;
 
+    int mQuantity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +50,46 @@ public class DetailsActivity extends AppCompatActivity
         mSupplierPhoneTextView = (TextView) findViewById(R.id.supplier_phone_view);
 
         getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+
+        Button incQuantityButton = (Button) findViewById(R.id.inc_quantity);
+        // Set a click listener on that Button
+        incQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateQuantity(1, R.string.quantity_incremented);
+            }
+        });
+
+        Button decQuantityButton = (Button) findViewById(R.id.dec_quantity);
+        // Set a click listener on that Button
+        decQuantityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateQuantity(-1, R.string.quantity_decremented);
+            }
+        });
+    }
+
+    private void updateQuantity(int value, int messageResId)
+    {
+        int newQuantity = mQuantity + value;
+
+        if(newQuantity < 0)
+        {
+            Toast.makeText(getApplicationContext(), getString(R.string.quantity_zero), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+
+        int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
+
+        if (rowsAffected > 0) {
+            mQuantity = newQuantity;
+            mQuantityTextView.setText(Integer.toString(newQuantity));
+            Toast.makeText(getApplicationContext(), getString(messageResId), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -95,6 +141,8 @@ public class DetailsActivity extends AppCompatActivity
             mQuantityTextView.setText(Integer.toString(quantity));
             mSupplierNameTextView.setText(supplierName);
             mSupplierPhoneTextView.setText(supplierPhone);
+
+            mQuantity = quantity;
         }
     }
 
@@ -106,5 +154,6 @@ public class DetailsActivity extends AppCompatActivity
         mQuantityTextView.setText("");
         mSupplierNameTextView.setText("");
         mSupplierPhoneTextView.setText("");
+        mQuantity = 0;
     }
 }

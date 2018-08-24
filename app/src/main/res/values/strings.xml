@@ -46,4 +46,10 @@
     <string name="delete">Delete</string>
 
     <string name="cancel">Cancel</string>
+
+    <string name="quantity_incremented">Quantity incremented</string>
+
+    <string name="quantity_decremented">Quantity decremented</string>
+
+    <string name="quantity_zero">Quantity cannot be decremented!</string>
 </resources>

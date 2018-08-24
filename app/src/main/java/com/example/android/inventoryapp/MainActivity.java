@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Barbie Basics #1");
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 14.95);
-        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 100);
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 2);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Mattel");
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "+000 111 22 33");
 
