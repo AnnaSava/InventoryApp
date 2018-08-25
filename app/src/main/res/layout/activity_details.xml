@@ -29,7 +29,7 @@
             <!-- Name field -->
             <TextView
                 android:id="@+id/product_name_view"
-                style="@style/EditorFieldStyle"
+                style="@style/DetailsFieldStyle"
                 tools:text="@string/hint_product_name"/>
 
         </LinearLayout>
@@ -58,14 +58,15 @@
             <!-- Price field -->
             <TextView
                 android:id="@+id/product_price_view"
-                style="@style/EditorFieldStyle"
+                style="@style/DetailsFieldStyle"
                 tools:text="@string/hint_product_price"
+                android:layout_marginRight="4dp"
                 android:layout_width="wrap_content" />
 
             <!-- Units for price ($) -->
             <TextView
                 android:id="@+id/label_weight_units_view"
-                style="@style/EditorUnitsStyle"
+                style="@style/DetailsFieldStyle"
                 android:text="@string/unit_product_price"
                 android:layout_width="wrap_content"/>
         </LinearLayout>
@@ -89,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="horizontal"
+            android:paddingTop="8dp"
             android:paddingLeft="4dp">
 
             <Button
@@ -103,10 +105,10 @@
                 tools:text="@string/hint_product_quantity"
                 android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
+                android:padding="4dp"
+                android:layout_margin="4dp"
+                android:textSize="20sp"
+                android:gravity="center"
                 android:text="0"/>
 
             <Button
@@ -141,13 +143,13 @@
             <TextView
                 android:id="@+id/supplier_name_view"
                 tools:text="@string/hint_supplier_name"
-                style="@style/EditorFieldStyle" />
+                style="@style/DetailsFieldStyle" />
 
             <!-- Breed field -->
             <TextView
                 android:id="@+id/supplier_phone_view"
                 tools:text="@string/hint_supplier_phone"
-                style="@style/EditorFieldStyle" />
+                style="@style/DetailsFieldStyle" />
         </LinearLayout>
     </LinearLayout>
 
