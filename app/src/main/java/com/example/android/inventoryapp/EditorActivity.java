@@ -59,7 +59,6 @@ public class EditorActivity extends AppCompatActivity
         mCurrentProductUri = intent.getData();
 
         if (mCurrentProductUri == null) {
-
             setTitle(getString(R.string.editor_activity_title_new_product));
         } else {
             setTitle(getString(R.string.editor_activity_title_edit_product));

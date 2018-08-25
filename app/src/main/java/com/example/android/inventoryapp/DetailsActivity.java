@@ -50,6 +50,8 @@ public class DetailsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        setTitle(getString(R.string.details_activity_title));
+
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
 

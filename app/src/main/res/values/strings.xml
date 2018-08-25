@@ -5,6 +5,8 @@
 
     <string name="editor_activity_title_edit_product">Edit Product</string>
 
+    <string name="details_activity_title">Product details</string>
+
     <string name="category_overview">Overview</string>
 
     <string name="hint_product_name">Product name</string>
@@ -78,4 +80,8 @@
     <string name="error_msg_supplier_name">Supplier name must be filled</string>
     \
     <string name="error_msg_supplier_phone">Supplier phone must be filled</string>
+
+    <string name="empty_view_title_text">There\'s no products yet...</string>
+
+    <string name="empty_view_subtitle_text">Get started by adding a product</string>
 </resources>
