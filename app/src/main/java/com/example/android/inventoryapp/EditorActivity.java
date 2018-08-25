@@ -96,8 +96,6 @@ public class EditorActivity extends AppCompatActivity
             case R.id.action_save:
                 // Save product to database
                 saveProduct();
-                // Exit activity
-                finish();
                 return true;
             case android.R.id.home:
                 if (!mProductHasChanged) {
@@ -141,23 +139,43 @@ public class EditorActivity extends AppCompatActivity
             return;
         }
 
+        if (TextUtils.isEmpty(nameString)) {
+            showErrorDialog(getString(R.string.error_msg_name));
+            return;
+        }
+
+        float price = 0;
+        try {
+            price = Float.parseFloat(priceString);
+        } catch (NumberFormatException e) {
+            showErrorDialog(getString(R.string.error_msg_price));
+            return;
+        }
+
+        int quantity = 0;
+        try {
+            quantity = Integer.parseInt(quantityString);
+        } catch (NumberFormatException e) {
+            showErrorDialog(getString(R.string.error_msg_quantity));
+            return;
+        }
+
+        if (TextUtils.isEmpty(supplierNameString)) {
+            showErrorDialog(getString(R.string.error_msg_supplier_name));
+            return;
+        }
+
+        if (TextUtils.isEmpty(supplierPhoneString)) {
+            showErrorDialog(getString(R.string.error_msg_supplier_phone));
+            return;
+        }
+
         // Create a ContentValues object where column names are the keys,
         // and product attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
-
-        float price = 0;
-        if(!TextUtils.isEmpty(priceString)) {
-            price = Float.parseFloat(priceString);
-        }
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
-
-        int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)) {
-            quantity = Integer.parseInt(quantityString);
-        }
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
-
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, supplierNameString);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, supplierPhoneString);
 
@@ -189,6 +207,9 @@ public class EditorActivity extends AppCompatActivity
                         Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Exit activity
+        finish();
     }
 
     @Override
@@ -263,7 +284,7 @@ public class EditorActivity extends AppCompatActivity
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the product.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -275,4 +296,20 @@ public class EditorActivity extends AppCompatActivity
         alertDialog.show();
     }
 
+    private void showErrorDialog(String errorMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(errorMessage);
+        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.setCancelable(false);
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 }

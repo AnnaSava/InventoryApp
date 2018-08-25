@@ -66,4 +66,16 @@
     <string name="discard">Discard</string>
 
     <string name="keep_editing">Keep Editing</string>
+
+    <string name="button_ok">OK</string>
+
+    <string name="error_msg_name">Name field must be filled</string>
+
+    <string name="error_msg_price">Error in price</string>
+
+    <string name="error_msg_quantity">Error in quantity</string>
+
+    <string name="error_msg_supplier_name">Supplier name must be filled</string>
+    \
+    <string name="error_msg_supplier_phone">Supplier phone must be filled</string>
 </resources>
