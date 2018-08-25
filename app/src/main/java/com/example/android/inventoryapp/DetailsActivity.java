@@ -201,7 +201,7 @@ public class DetailsActivity extends AppCompatActivity
             mPriceTextView.setText(Float.toString(price));
             mQuantityTextView.setText(Integer.toString(quantity));
             mSupplierNameTextView.setText(supplierName);
-            mSupplierPhoneTextView.setText(supplierPhone);
+            mSupplierPhoneTextView.setText("+" + supplierPhone);
 
             mQuantity = quantity;
         }

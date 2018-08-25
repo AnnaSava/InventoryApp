@@ -1,17 +1,20 @@
 package com.example.android.inventoryapp;
 
+import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.android.inventoryapp.data.InventoryDbHelper;
 import com.example.android.inventoryapp.data.InventoryContract.ProductEntry;
@@ -47,8 +50,6 @@ public class MainActivity extends AppCompatActivity
 
         mDbHelper = new InventoryDbHelper(this);
 
-        //insertProduct();
-
         ListView productListView = (ListView) findViewById(R.id.list);
 
         View emptyView = findViewById(R.id.empty_view);
@@ -77,17 +78,48 @@ public class MainActivity extends AppCompatActivity
         getLoaderManager().initLoader(PRODUCT_LOADER, null, this);
     }
 
-    private void insertProduct() {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu options from the res/menu/menu_catalog.xml file.
+        // This adds menu items to the app bar.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-        ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Barbie Basics #1");
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 14.95);
-        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 2);
-        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Mattel");
-        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "+000 111 22 33");
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            // Respond to a click on the "Insert dummy data" menu option
+            case R.id.action_insert_some_products:
+                insertProducts();
+                return true;
+            // Respond to a click on the "Delete all entries" menu option
+            case R.id.action_delete_all_products:
+                showDeleteAllConfirmationDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        long newRowId = db.insert(ProductEntry.TABLE_NAME, null, values);
+    private void insertProducts() {
+        ContentValues product1Values = new ContentValues();
+        product1Values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Pet Shelter App");
+        product1Values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 14.95);
+        product1Values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 10);
+        product1Values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Udacity Software");
+        product1Values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "000 111 22 33");
+
+        getContentResolver().insert(ProductEntry.CONTENT_URI, product1Values);
+
+        ContentValues product2Values = new ContentValues();
+        product2Values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Inventory Tracking App");
+        product2Values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 15.95);
+        product2Values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 2);
+        product2Values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_NAME, "Udacity Students");
+        product2Values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_PHONE, "999 888 77 66");
+
+        getContentResolver().insert(ProductEntry.CONTENT_URI, product2Values);
     }
 
     @Override
@@ -115,5 +147,36 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mCursorAdapter.swapCursor(null);
+    }
+
+    private void showDeleteAllConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the postivie and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the products.
+                deleteAllProducts();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the product.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void deleteAllProducts() {
+        int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
+        Log.v("MainActivity", rowsDeleted + " rows deleted from inventory database");
     }
 }

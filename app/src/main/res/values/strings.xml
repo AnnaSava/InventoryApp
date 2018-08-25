@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InventoryApp</string>
+    <string name="app_name">Software Shop</string>
 
     <string name="editor_activity_title_new_product">Add a Product</string>
 
@@ -73,9 +73,9 @@
 
     <string name="error_msg_name">Name field must be filled</string>
 
-    <string name="error_msg_price">Error in price</string>
+    <string name="error_msg_price">Price field must be filled</string>
 
-    <string name="error_msg_quantity">Error in quantity</string>
+    <string name="error_msg_quantity">Quantity field must be filled</string>
 
     <string name="error_msg_supplier_name">Supplier name must be filled</string>
     \
@@ -84,4 +84,10 @@
     <string name="empty_view_title_text">There\'s no products yet...</string>
 
     <string name="empty_view_subtitle_text">Get started by adding a product</string>
+
+    <string name="action_insert_some_products">Insert some products</string>
+
+    <string name="action_delete_all_products">Delete all products</string>
+
+    <string name="delete_all_dialog_msg">Delete all the products?</string>
 </resources>

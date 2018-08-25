@@ -1,5 +1,6 @@
 package com.example.android.inventoryapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -97,8 +98,11 @@ public class EditorActivity extends AppCompatActivity
                 saveProduct();
                 return true;
             case android.R.id.home:
+                final Intent intent = new Intent(EditorActivity.this, DetailsActivity.class);
+                intent.setData(mCurrentProductUri);
+
                 if (!mProductHasChanged) {
-                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    NavUtils.navigateUpTo(EditorActivity.this, intent);
                     return true;
                 }
 
@@ -107,7 +111,7 @@ public class EditorActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                                NavUtils.navigateUpTo(EditorActivity.this, intent);
                             }
                         };
 
@@ -139,7 +143,8 @@ public class EditorActivity extends AppCompatActivity
         }
 
         if (TextUtils.isEmpty(nameString)) {
-            showErrorDialog(getString(R.string.error_msg_name));
+            Toast.makeText(this, getString(R.string.error_msg_name),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -147,7 +152,8 @@ public class EditorActivity extends AppCompatActivity
         try {
             price = Float.parseFloat(priceString);
         } catch (NumberFormatException e) {
-            showErrorDialog(getString(R.string.error_msg_price));
+            Toast.makeText(this, getString(R.string.error_msg_price),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -155,17 +161,20 @@ public class EditorActivity extends AppCompatActivity
         try {
             quantity = Integer.parseInt(quantityString);
         } catch (NumberFormatException e) {
-            showErrorDialog(getString(R.string.error_msg_quantity));
+            Toast.makeText(this, getString(R.string.error_msg_quantity),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (TextUtils.isEmpty(supplierNameString)) {
-            showErrorDialog(getString(R.string.error_msg_supplier_name));
+            Toast.makeText(this, getString(R.string.error_msg_supplier_name),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (TextUtils.isEmpty(supplierPhoneString)) {
-            showErrorDialog(getString(R.string.error_msg_supplier_phone));
+            Toast.makeText(this, getString(R.string.error_msg_supplier_phone),
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -290,23 +299,6 @@ public class EditorActivity extends AppCompatActivity
             }
         });
 
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-    private void showErrorDialog(String errorMessage) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(errorMessage);
-        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.setCancelable(false);
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
