@@ -29,6 +29,8 @@
 
     <string name="action_delete">Delete</string>
 
+    <string name="action_edit">Edit</string>
+
     <string name="editor_insert_product_successful">Product saved</string>
 
     <string name="editor_insert_product_failed">Error with saving product</string>

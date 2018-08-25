@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
+                // Create new intent to go to {@link DetailsActivity}
                 Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
 
                 Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
